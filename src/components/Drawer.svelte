@@ -41,10 +41,10 @@
 		event.preventDefault();
 		event.stopPropagation();
 		const end = event.changedTouches[0].clientY;
-		if (initCoord - end > 100) {
+		if (initCoord - end > 50) {
 			isExpanded = true;
 		}
-		if (initCoord - end < -100) {
+		if (initCoord - end < -50) {
 			isExpanded = false;
 		}
 	};
