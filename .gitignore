@@ -8,6 +8,8 @@ node_modules
 /.svelte-kit
 /build
 
+/src/routes/reserve/[token]/
+
 # OS
 .DS_Store
 Thumbs.db
