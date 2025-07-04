@@ -31,14 +31,8 @@
 <T.DirectionalLight intensity={2.5} castShadow position={[0, 10, 10]} />
 
 {#if $cupModel}
-	<T is={$cupModel.scene} scale={[6, 6, 6]} bind:ref={cup} position={cupCoords} castShadow />
+	<T is={$cupModel.scene} scale={[6, 6, 6]} bind:ref={cup} position={cupCoords} />
 {/if}
 {#if $tableModel}
-	<T
-		is={$tableModel.scene}
-		scale={[1.5, 1.5, 1.5]}
-		position={[0, -1.5, 0]}
-		rotation.y={rotation}
-		castShadow
-	/>
+	<T is={$tableModel.scene} scale={[1.5, 1.5, 1.5]} position={[0, -1.5, 0]} rotation.y={rotation} />
 {/if}
