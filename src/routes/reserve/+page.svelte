@@ -3,9 +3,11 @@
 	import { Html5QrcodeScanner } from 'html5-qrcode';
 	import { onMount } from 'svelte';
 	let html5QrcodeScanner;
+	let dt;
 	onMount(() => {
 		function onScanSuccess(decodedText, decodedResult) {
 			// handle the scanned code as you like, for example:
+			dt = decodedText;
 			console.log(`Code matched = ${decodedText}`, decodedResult);
 		}
 
@@ -25,6 +27,7 @@
 </script>
 
 <h1 transition:fade class="m-8 text-5xl">
+	<p>{dt}</p>
 	<p>Hi,</p>
 	<span class="text-4xl">Welcome</span>
 	<p class="my-2 text-xl font-semibold">
