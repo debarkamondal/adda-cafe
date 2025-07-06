@@ -11,7 +11,7 @@ const config = {
 		adapter: adapter({
 			precompress: true,
 			fallback: '404.html',
-			fallback: 'index.html'
+			fallback: 'app.html'
 		}),
 		paths: {
 			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
