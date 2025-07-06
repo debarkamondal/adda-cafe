@@ -21,7 +21,9 @@
 	const getDevices = async () => {
 		const codeReader = new BrowserQRCodeReader();
 		if (!videoElement) return;
-		videoInputDevice = await navigator.mediaDevices.getUserMedia({ video: true });
+		videoInputDevice = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: 'environment' }
+		});
 		videoElement.srcObject = videoInputDevice;
 		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
 		const url = new URL(res.getText());
