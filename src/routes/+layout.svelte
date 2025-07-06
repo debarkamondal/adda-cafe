@@ -135,7 +135,7 @@
 	<title>Adda-Café</title>
 	<meta name="description" content="A cozy little cafe for Adda" />
 </svelte:head>
-<svelte:window bind:outerHeight={innerHeight} />
+<svelte:window bind:innerHeight />
 <main id="main-section" style:margin-bottom={`${innerHeight * 0.12}px`}>
 	{@render children()}
 </main>

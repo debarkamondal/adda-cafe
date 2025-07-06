@@ -1,0 +1,120 @@
+<script lang="ts">
+	import { fade } from 'svelte/transition';
+	import { MultiFormatReader, BarcodeFormat } from '@zxing/library';
+	import { DecodeHintType } from '@zxing/library';
+	import { RGBLuminanceSource } from '@zxing/library';
+	import { BinaryBitmap } from '@zxing/library';
+	import { HybridBinarizer } from '@zxing/library';
+
+	const width = 320;
+	let height = 0;
+	let videoSource: HTMLVideoElement;
+	let photo: HTMLImageElement;
+	let canvas: HTMLCanvasElement;
+	let loading = $state(false);
+	let isAvailable = $state(false);
+	let streaming = $state(false);
+	const obtainCamera = async () => {
+		try {
+			loading = true;
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: true
+			});
+			console.log(stream);
+			if (!videoSource) return;
+			videoSource.srcObject = stream;
+			videoSource.play();
+			loading = false;
+		} catch (error) {
+			console.log(error);
+		}
+	};
+	const handleCanPlay = () => {
+		if (!streaming) {
+			height = videoSource.videoHeight / (videoSource.videoWidth / width);
+			videoSource.setAttribute('width', width.toString());
+			videoSource.setAttribute('height', height.toString());
+			canvas.setAttribute('width', width.toString());
+			canvas.setAttribute('height', height.toString());
+			streaming = true;
+		}
+
+		false;
+	};
+
+	function clearPhoto() {
+		const context = canvas.getContext('2d');
+		if (!context) return;
+		context.fillStyle = '#AAA';
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		const data = canvas.toDataURL('image/png');
+		photo.setAttribute('src', data);
+	}
+
+	function takePicture() {
+		const context = canvas.getContext('2d');
+		if (width && height && context) {
+			canvas.width = width;
+			canvas.height = height;
+			context.drawImage(videoSource, 0, 0, width, height);
+			const data = context.getImageData(0, 0, width, height);
+
+			const hints = new Map();
+			const formats = [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX /*, ...*/];
+
+			hints.set(DecodeHintType.POSSIBLE_FORMATS, formats);
+
+			const reader = new MultiFormatReader();
+
+			const luminanceSource = new RGBLuminanceSource(data.data, width, height);
+			const binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+
+			reader.decode(binaryBitmap, hints);
+		} else {
+			clearPhoto();
+		}
+	}
+
+	const handleCapture = (e: MouseEvent) => {
+		takePicture();
+		e.preventDefault();
+	};
+	$effect(() => {
+		if (!('BarcodeDetector' in globalThis)) {
+			console.log('Barcode Detector is not supported by this browser.');
+			isAvailable = false;
+		} else {
+			console.log('Barcode Detector supported!');
+			isAvailable = true;
+		}
+	});
+</script>
+
+<h1 transition:fade class="m-8 text-5xl">
+	<span>{isAvailable}</span>
+	<p>Hi,</p>
+	<span class="text-4xl">Welcome</span>
+	<p class="my-2 text-xl font-semibold">
+		To,
+		<span
+			class="from-primary-300 to-accent-500 ml-1 bg-gradient-to-r bg-clip-text text-transparent"
+		>
+			Adda-Cafe
+		</span>
+	</p>
+</h1>
+<div>
+	{#if loading}
+		<h1>LOADING</h1>
+	{/if}
+	<canvas bind:this={canvas} class="hidden" id="canvas"> </canvas>
+	<!-- svelte-ignore a11y_media_has_caption -->
+	<video bind:this={videoSource} oncanplay={handleCanPlay}></video>
+	<button id="start-button" onclick={handleCapture}>Take photo</button>
+
+	<button onclick={obtainCamera}>CLICK</button>
+</div>
+<div class="output">
+	<img bind:this={photo} alt="The screen capture will appear in this box." />
+</div>

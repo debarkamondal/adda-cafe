@@ -1,26 +1,55 @@
 <script lang="ts">
+	import { BrowserQRCodeReader } from '@zxing/browser';
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/state';
+	import { pushState } from '$app/navigation';
 
-	let videoSource: HTMLVideoElement | null = null;
-	let loading = false;
-	const obtainCamera = async () => {
-		try {
-			loading = true;
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true
-			});
-			console.log(stream);
-			if (!videoSource) return;
-			videoSource.srcObject = stream;
-			videoSource.play();
-			loading = false;
-		} catch (error) {
-			console.log(error);
+	let videoElement = $state<HTMLVideoElement>();
+	let videoInputDevice = $state<MediaStream>();
+	let coords = $state<GeolocationCoordinates>();
+
+	let token = $state<string | null>(page.url.searchParams.get('token'));
+	let streaming = $state(false);
+	let formData = $state({
+		nickname: '',
+		phone: null
+	});
+
+	const width = 320;
+	let height = 0;
+
+	const getDevices = async () => {
+		const codeReader = new BrowserQRCodeReader();
+		if (!videoElement) return;
+		videoInputDevice = await navigator.mediaDevices.getUserMedia({ video: true });
+		videoElement.srcObject = videoInputDevice;
+		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
+		const url = new URL(res.getText());
+		if (url) {
+			token = url.searchParams.get('token') as string;
+			pushState('/reserve?token=' + token, page.state);
+			videoInputDevice.getTracks().forEach((track) => track.stop());
 		}
 	};
+	const handleCanPlay = () => {
+		if (!streaming && videoElement) {
+			height = videoElement.videoHeight / (videoElement.videoWidth / width);
+			videoElement.setAttribute('width', width.toString());
+			videoElement.setAttribute('height', height.toString());
+			streaming = true;
+		}
+	};
+	const handleSubmit = () => {
+		navigator.geolocation.getCurrentPosition((data) => (coords = data.coords));
+	};
+
+	$effect(() => {
+		if (!token) getDevices();
+	});
 </script>
 
 <h1 transition:fade class="m-8 text-5xl">
+	<span>{coords?.longitude}:{coords?.latitude}</span>
 	<p>Hi,</p>
 	<span class="text-4xl">Welcome</span>
 	<p class="my-2 text-xl font-semibold">
@@ -32,11 +61,40 @@
 		</span>
 	</p>
 </h1>
-<div>
-	{#if loading}
-		<h1>LOADING</h1>
-	{/if}
-	<!-- svelte-ignore a11y-media-has-caption -->
-	<video bind:this={videoSource}></video>
-	<button on:click={obtainCamera}>CLICK</button>
-</div>
+{#if !token}
+	<span>{token}</span>
+	<video bind:this={videoElement} class="mx-auto w-96 p-2" oncanplay={handleCanPlay}>
+		<track kind="captions" />
+	</video>
+{/if}
+{#if token}
+	<div class="absolute top-0 flex h-full items-center">
+		<div class="bg-primary-900 border-accent-200 mx-4 rounded-xl border px-4 py-8">
+			<h2 class="text-center text-2xl font-semibold">Reserve Table: {'test'}</h2>
+			<form class="my-4 space-y-4 space-x-2">
+				<label for="nickname" class="font-semibold">Nickname: </label>
+				<input
+					class="border-accent-200 border-b"
+					id="nickname"
+					name="nickname"
+					placeholder="Nickname"
+					bind:value={formData.nickname}
+				/>
+				<label for="phone" class="font-semibold">Phone: </label>
+				<input
+					class="border-accent-200 border-b"
+					id="phone"
+					name="phone"
+					type="number"
+					placeholder="Phone number"
+					bind:value={formData.phone}
+				/>
+				<div class="mt-4 flex">
+					<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
+						>Submit</button
+					>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
