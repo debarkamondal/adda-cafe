@@ -27,5 +27,9 @@
 </div>
 <Orders />
 <div class="my-4 flex">
+	<button class="bg-accent-600 mx-auto h-12 w-48 rounded-md"><a href="/reserve">Navigate</a></button
+	>
+</div>
+<div class="my-4 flex">
 	<button class="bg-accent-600 mx-auto h-12 w-48 rounded-md">Pay</button>
 </div>
