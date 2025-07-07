@@ -10,7 +10,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			precompress: false,
-			fallback: '404.html',
+			fallback: 'index.html',
 			strict: true
 		})
 	}
