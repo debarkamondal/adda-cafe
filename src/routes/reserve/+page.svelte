@@ -8,7 +8,8 @@
 	let videoInputDevice = $state<MediaStream>();
 	let coords = $state<GeolocationCoordinates>();
 
-	let token = $state<string | null>(page.url.searchParams.get('token'));
+	// let token = $state<string | null>(page.url.searchParams.get('token'));
+	let token = $state('');
 	let streaming = $state(false);
 	let formData = $state({
 		nickname: '',
