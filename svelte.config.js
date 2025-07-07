@@ -9,8 +9,9 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			precompress: true,
-			fallback: '200.html'
+			precompress: false,
+			fallback: '200.html',
+			strict: true
 		}),
 		paths: {
 			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
