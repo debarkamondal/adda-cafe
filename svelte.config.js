@@ -10,7 +10,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			precompress: false,
-			fallback: 'fallback.html',
+			fallback: '404.html',
 			strict: true
 		}),
 		paths: {
