@@ -1,4 +1,5 @@
 name = "adda-cafe"
+compatibility_date = "2025-07-08"
 
 [assets]
 directory = "./build/"
