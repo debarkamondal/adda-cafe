@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { BrowserQRCodeReader } from '@zxing/browser';
+	//@ts-ignore
+	import { PUBLIC_TEST } from "$env/static/public"
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 	import { pushState } from '$app/navigation';
@@ -52,7 +54,7 @@
 </script>
 
 <h1 transition:fade class="m-8 text-5xl">
-	<span>{coords?.longitude}:{coords?.latitude}</span>
+	<span>{PUBLIC_TEST}</span>
 	<p>Hi,</p>
 	<span class="text-4xl">Welcome</span>
 	<p class="my-2 text-xl font-semibold">

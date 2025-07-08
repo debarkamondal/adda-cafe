@@ -3,12 +3,14 @@
 	import { Canvas } from '@threlte/core';
 	import TableCanvas from '../components/TableCanvas.svelte';
 	import { fade } from 'svelte/transition';
+	import { PUBLIC_TEST } from "$env/static/public"
 
 	let innerHeight = $state(10000);
 </script>
 
 <svelte:window bind:outerHeight={innerHeight} />
 <h1 transition:fade class="m-8 text-5xl">
+	<span>{PUBLIC_TEST}</span>
 	<p>Hi,</p>
 	<span class="text-4xl">Dezire</span>
 	<p class="my-2 text-xl font-semibold">
