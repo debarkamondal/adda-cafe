@@ -1,4 +1,8 @@
 name = "adda-cafe"
+
 [assets]
 directory = "./build/"
 not_found_handling= "404-page"
+
+[vars]
+PUBLIC_TEST = "testhello"
