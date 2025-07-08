@@ -10,7 +10,7 @@
 
 <svelte:window bind:outerHeight={innerHeight} />
 <h1 transition:fade class="m-8 text-5xl">
-	<span>{PUBLIC_TEST}</span>
+	<span>Hey:{PUBLIC_TEST}</span>
 	<p>Hi,</p>
 	<span class="text-4xl">Dezire</span>
 	<p class="my-2 text-xl font-semibold">
