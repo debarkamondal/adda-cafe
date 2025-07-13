@@ -3,16 +3,15 @@
 	import { Canvas } from '@threlte/core';
 	import TableCanvas from '../components/TableCanvas.svelte';
 	import { fade } from 'svelte/transition';
-	import { PUBLIC_TEST } from "$env/static/public"
+	import session from '../states/global.svelte';
 
 	let innerHeight = $state(10000);
 </script>
 
 <svelte:window bind:outerHeight={innerHeight} />
 <h1 transition:fade class="m-8 text-5xl">
-	<span>Hey:{PUBLIC_TEST}</span>
 	<p>Hi,</p>
-	<span class="text-4xl">Dezire</span>
+	<span class="text-4xl capitalize">{session.name || 'welcome'}</span>
 	<p class="my-2 text-xl font-semibold">
 		To,
 		<span
@@ -28,10 +27,6 @@
 	</Canvas>
 </div>
 <Orders />
-<div class="my-4 flex">
-	<button class="bg-accent-600 mx-auto h-12 w-48 rounded-md"><a href="/reserve">Navigate</a></button
-	>
-</div>
 <div class="my-4 flex">
 	<button class="bg-accent-600 mx-auto h-12 w-48 rounded-md">Pay</button>
 </div>

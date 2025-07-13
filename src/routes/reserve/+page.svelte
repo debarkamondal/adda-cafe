@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { BrowserQRCodeReader } from '@zxing/browser';
 	//@ts-ignore
-	import { PUBLIC_TEST } from "$env/static/public"
 	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
-	import { pushState } from '$app/navigation';
+	import { goto, pushState } from '$app/navigation';
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+
+	import getSession from '../../utils/getSession';
+	import session from '../../states/global.svelte';
+	import { toastStore } from '../../states/toast.svelte';
 
 	let videoElement = $state<HTMLVideoElement>();
 	let videoInputDevice = $state<MediaStream>();
-	let coords = $state<GeolocationCoordinates>();
 
 	let token = $state<string | null>(page.url.searchParams.get('token'));
-	// let token = $state('');
 	let streaming = $state(false);
 	let formData = $state({
 		nickname: '',
@@ -44,8 +46,41 @@
 			streaming = true;
 		}
 	};
-	const handleSubmit = () => {
-		navigator.geolocation.getCurrentPosition((data) => (coords = data.coords));
+	const handleSubmit = async (event: MouseEvent) => {
+		event.preventDefault();
+		let coords: GeolocationCoordinates;
+		if (!token) toastStore.error('Invalid Token please Scan the QR code again.');
+		if (typeof formData.nickname !== 'string' || typeof formData.phone !== 'number') {
+			toastStore.error('Invalid user input');
+			return;
+		}
+		navigator.geolocation.getCurrentPosition(async (data) => {
+			coords = data.coords;
+			try {
+				const res = await fetch(`${PUBLIC_BACKEND_URL}/reserve`, {
+					method: 'POST',
+					credentials: 'include',
+					body: JSON.stringify({
+						name: formData.nickname,
+						phone: formData.phone,
+						token,
+						coords: {
+							lat: coords.latitude,
+							long: coords.longitude
+						}
+					})
+				});
+				if (res.status == 200) {
+					await getSession();
+					if (session.role === 'user') {
+						goto('/');
+					} else toastStore.error("Couldn't create session");
+				}
+			} catch (error) {
+				console.log(error);
+				error = 'Something went wrong. Please try again.';
+			}
+		});
 	};
 
 	$effect(() => {
@@ -54,7 +89,6 @@
 </script>
 
 <h1 transition:fade class="m-8 text-5xl">
-	<span>{PUBLIC_TEST}</span>
 	<p>Hi,</p>
 	<span class="text-4xl">Welcome</span>
 	<p class="my-2 text-xl font-semibold">
@@ -73,7 +107,7 @@
 	</video>
 {/if}
 {#if token}
-	<div class="absolute top-0 flex h-full items-center">
+	<div class="absolute top-0 flex h-full flex-col justify-center gap-4">
 		<div class="bg-primary-900 border-accent-200 mx-4 rounded-xl border px-4 py-8">
 			<h2 class="text-center text-2xl font-semibold">Reserve Table: {'test'}</h2>
 			<form class="my-4 space-y-4 space-x-2">

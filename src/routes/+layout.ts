@@ -1,2 +1,11 @@
+import { browser } from '$app/environment';
+import getSession from '../utils/getSession';
+import type { LayoutLoad } from './$types';
+
 export const prerender = true;
-export const trailingSlash = 'always';
+
+export const load: LayoutLoad = async () => {
+	if (browser) {
+		const data = await getSession();
+	}
+};

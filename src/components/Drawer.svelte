@@ -1,5 +1,7 @@
 <script lang="ts">
-	let { children, innerHeight } = $props();
+	import type { Snippet } from 'svelte';
+
+	let { children, innerHeight }: { children: Snippet; innerHeight: number } = $props();
 
 	let isExpanded = $state(false);
 	let barCoord = $derived.by(() => {
