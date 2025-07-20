@@ -19,7 +19,7 @@
 			name: string;
 			description: string;
 		}[]
-	>();
+	>([]);
 
 	let actionOpened = $state();
 	const handleActionExpansion = (index: number) => {
@@ -45,7 +45,16 @@
 			setTimeout(() => (status = 'loaded'), 2000);
 		};
 		ws.onmessage = async (event) => {
-			console.log(event);
+			const data: Record<string, any> = JSON.parse(event.data);
+			delete data.pk;
+			delete data.sk;
+			console.log(data);
+			for (const action in data) {
+				actions.push({
+					name: action.split(':')[0],
+					description: data[action]
+				});
+			}
 		};
 	}
 </script>
@@ -55,12 +64,12 @@
 	<Card
 		class={[
 			'my-8 min-h-24',
-			!actions
+			actions?.length < 1
 				? 'text-primary-700 flex items-center justify-center border-dashed'
 				: 'items-left block'
 		]}
 	>
-		{#if !actions}
+		{#if actions?.length < 1}
 			{#if status === 'connecting'}
 				<h2 class="font-medium">Connecting...</h2>
 			{/if}
@@ -80,7 +89,7 @@
 						onclick={() => handleActionExpansion(index)}
 						class="hover:bg-accent-800 focus:bg-accent-800 bg-primary-800 flex w-full items-center justify-between px-4 py-3 text-left transition-colors duration-200 focus:outline-none"
 					>
-						<span class="text-primary-100 font-medium">{action.name}</span>
+						<span class="text-primary-100 font-medium capitalize">{action.name}</span>
 						<svg
 							class="text-accent-200 h-5 w-5 transform transition-transform duration-200 {actionOpened ===
 							index
@@ -101,7 +110,7 @@
 					{#if actionOpened === index}
 						<div class="border-accent-200 bg-accent-50 border-t">
 							<p transition:slide={{ duration: 400 }} class="text-primary-900 p-4 leading-relaxed">
-								{action.description}
+								{JSON.stringify(action.description)}
 							</p>
 						</div>
 					{/if}
