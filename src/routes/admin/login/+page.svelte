@@ -1,7 +1,7 @@
 <script lang="ts">
 	//@ts-ignore
 	import { fade } from 'svelte/transition';
-	import { goto  } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 	import { toastStore } from '../../../states/toast.svelte';
@@ -9,15 +9,13 @@
 	import session from '../../../states/global.svelte';
 	import Card from '../../../components/Card.svelte';
 
-
 	let formData = $state<{
-		username: string | null,
-		password: string | null
+		username: string | null;
+		password: string | null;
 	}>({
 		username: null,
-		password: null  ,
+		password: null
 	});
-
 
 	const handleSubmit = async (event: MouseEvent) => {
 		event.preventDefault();
@@ -25,7 +23,7 @@
 			toastStore.error('Invalid user input');
 			return;
 		}
-		if ( formData.username.length < 4 ||  formData.password.length < 8) {
+		if (formData.username.length < 4 || formData.password.length < 8) {
 			toastStore.error('Invalid user input');
 			return;
 		}
@@ -35,7 +33,7 @@
 				credentials: 'include',
 				body: JSON.stringify({
 					username: formData.username,
-					password: formData.password,
+					password: formData.password
 				})
 			});
 			if (res.status == 200) {
@@ -49,7 +47,6 @@
 			error = 'Something went wrong. Please try again.';
 		}
 	};
-
 </script>
 
 <h1 transition:fade class="m-8 text-5xl">
@@ -64,10 +61,11 @@
 		</span>
 	</p>
 </h1>
-	<div class="absolute top-0 flex h-full flex-col justify-center gap-4">
+<div class="absolute top-0 flex h-full flex-col justify-center gap-4">
 	<Card class="py-8">
-			<h2 class="text-center text-2xl font-semibold">Admin Login</h2>
-			<form class="my-4 space-y-4 space-x-2">
+		<h2 class="text-center text-2xl font-semibold">Admin Login</h2>
+		<form class="my-4 space-y-4 space-x-2">
+			<div class="flex gap-2">
 				<label for="nickname" class="font-semibold">Username: </label>
 				<input
 					class="border-accent-200 border-b"
@@ -76,6 +74,8 @@
 					placeholder="Username"
 					bind:value={formData.username}
 				/>
+			</div>
+			<div class="flex gap-2">
 				<label for="phone" class="font-semibold">Password: </label>
 				<input
 					class="border-accent-200 border-b"
@@ -85,11 +85,12 @@
 					placeholder="Password"
 					bind:value={formData.password}
 				/>
-				<div class="mt-4 flex">
-					<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
-						>Submit</button
-					>
-				</div>
-			</form>
-		</Card>
-	</div>
+			</div>
+			<div class="mt-4 flex">
+				<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
+					>Submit</button
+				>
+			</div>
+		</form>
+	</Card>
+</div>

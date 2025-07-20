@@ -112,27 +112,31 @@
 		<Card class="py-8">
 			<h2 class="text-center text-2xl font-semibold">Reserve Table: {'test'}</h2>
 			<form class="my-4 space-y-4 space-x-2">
-				<label for="nickname" class="font-semibold">Nickname: </label>
-				<input
-					class="border-accent-200 border-b"
-					id="nickname"
-					name="nickname"
-					placeholder="Nickname"
-					bind:value={formData.nickname}
-				/>
-				<label for="phone" class="font-semibold">Phone: </label>
-				<input
-					class="border-accent-200 border-b"
-					id="phone"
-					name="phone"
-					type="number"
-					placeholder="Phone number"
-					bind:value={formData.phone}
-				/>
-				<div class="mt-4 flex">
-					<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
-						>Submit</button
-					>
+				<div class="flex gap-2">
+					<label for="nickname" class="font-semibold">Nickname: </label>
+					<input
+						class="border-accent-200 border-b"
+						id="nickname"
+						name="nickname"
+						placeholder="Nickname"
+						bind:value={formData.nickname}
+					/>
+				</div>
+				<div class="flex gap-2">
+					<label for="phone" class="font-semibold">Phone: </label>
+					<input
+						class="border-accent-200 border-b"
+						id="phone"
+						name="phone"
+						type="number"
+						placeholder="Phone number"
+						bind:value={formData.phone}
+					/>
+					<div class="mt-4 flex">
+						<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
+							>Submit</button
+						>
+					</div>
 				</div>
 			</form>
 		</Card>
