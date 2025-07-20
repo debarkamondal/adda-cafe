@@ -16,10 +16,10 @@
 </svelte:head>
 <svelte:window bind:innerHeight />
 <main id="main-section" class="" style:margin-bottom={`${innerHeight * 0.12}px`}>
-	<ToastContainer/>
+	<ToastContainer />
 	{@render children()}
 </main>
-<Drawer innerHeight={innerHeight !==0 ? innerHeight : 10000}>
+<Drawer innerHeight={innerHeight !== 0 ? innerHeight : 10000}>
 	{#if cart.items.length}
 		<h1 class="mx-2 text-3xl font-semibold">Cart</h1>
 		<Menu menu={cart.items} />

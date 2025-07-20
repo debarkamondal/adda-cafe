@@ -7,6 +7,7 @@
 	import { toastStore } from '../../../states/toast.svelte';
 	import getSession from '../../../utils/getSession';
 	import session from '../../../states/global.svelte';
+	import Card from '../../../components/Card.svelte';
 
 
 	let formData = $state<{
@@ -64,7 +65,7 @@
 	</p>
 </h1>
 	<div class="absolute top-0 flex h-full flex-col justify-center gap-4">
-		<div class="bg-primary-900 border-accent-200 mx-4 rounded-xl border px-4 py-8">
+	<Card class="py-8">
 			<h2 class="text-center text-2xl font-semibold">Admin Login</h2>
 			<form class="my-4 space-y-4 space-x-2">
 				<label for="nickname" class="font-semibold">Username: </label>
@@ -90,5 +91,5 @@
 					>
 				</div>
 			</form>
-		</div>
+		</Card>
 	</div>

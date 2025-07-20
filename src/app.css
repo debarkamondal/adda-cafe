@@ -61,7 +61,6 @@
 	--color-accent-900: oklch(20.71% 0.083 2.86);
 	--color-accent-950: oklch(13.93% 0.057 355.17);
 }
-
 body {
 	@apply text-text-100 bg-primary-950;
 }

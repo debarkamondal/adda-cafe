@@ -1,14 +1,14 @@
 import { PUBLIC_PEM } from '$env/static/public';
 import type { sessionInfo } from '../../types';
 import session from '../states/global.svelte';
-const getSession = async (): Promise<sessionInfo | void> => {
+const getSession = async (): Promise<sessionInfo | null> => {
 	try {
 		const keyString = PUBLIC_PEM.trim();
 		const pemHeader = '-----BEGIN PUBLIC KEY-----';
 		const pemFooter = '-----END PUBLIC KEY-----';
 
 		let cookies = document.cookie.split(';');
-		if (!cookies) return;
+		if (!cookies) return null;
 		let sessionInfoToken: string = '';
 		cookies.some((cookie: string) => {
 			cookie = cookie.trim();
@@ -20,7 +20,7 @@ const getSession = async (): Promise<sessionInfo | void> => {
 			}
 			return false;
 		});
-		if (sessionInfoToken.length < 1) return;
+		if (sessionInfoToken.length < 1) return null;
 
 		sessionInfoToken = sessionInfoToken.slice(1, sessionInfoToken.length);
 		const [data, signature] = sessionInfoToken.split(',');
@@ -56,9 +56,10 @@ const getSession = async (): Promise<sessionInfo | void> => {
 			session.role = temp.role;
 			return temp;
 		}
+		return null;
 	} catch (error) {
 		console.log(error);
-		return;
+		return null;
 	}
 };
 export default getSession;
