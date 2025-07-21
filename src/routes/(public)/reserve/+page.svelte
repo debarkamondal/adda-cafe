@@ -6,10 +6,10 @@
 	import { goto, pushState } from '$app/navigation';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
-	import getSession from '../../utils/getSession';
-	import session from '../../states/global.svelte';
-	import { toastStore } from '../../states/toast.svelte';
-	import Card from '../../components/Card.svelte';
+	import getSession from '$lib/utils/getSession';
+	import session from '../../../states/global.svelte';
+	import { toastStore } from '../../../states/toast.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	let videoElement = $state<HTMLVideoElement>();
 	let videoInputDevice = $state<MediaStream>();

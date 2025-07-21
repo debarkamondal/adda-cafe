@@ -1,9 +1,9 @@
 <script lang="ts">
-	import '../app.css';
-	import Drawer from '../components/Drawer.svelte';
-	import Menu from '../components/Menu.svelte';
-	import { cart } from './cart.svelte';
-	import ToastContainer from '../components/ToastContainer.svelte';
+	import '../../app.css';
+	import Drawer from '$lib/components/Drawer.svelte';
+	import Menu from '$lib/components/Menu.svelte';
+	import { cart } from '../../states/cart.svelte';
+	import ToastContainer from '$lib/components/ToastContainer.svelte';
 
 	let dialog = $state<HTMLDialogElement>();
 	let innerHeight = $state(0);

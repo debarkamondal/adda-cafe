@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cart, type menuItem } from '../routes/cart.svelte';
+	import { cart, type menuItem } from '../../states/cart.svelte';
 	const {
 		item = { id: 'test', title: 'test', price: 0, image: 'test', qty: 0 }
 	}: { item: menuItem } = $props();

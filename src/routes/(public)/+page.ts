@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { page } from '$app/state';
-import getSession from '../utils/getSession';
-import type { PageLoad } from './reserve/$types';
+import getSession from '$lib/utils/getSession';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async () => {
 	if (browser) {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AddToCartButton from './AddToCartButton.svelte';
-	import type { menuItem } from '../routes/cart.svelte';
+	import type { menuItem } from '../../states/cart.svelte';
 	import { fade } from 'svelte/transition';
 
 	let { menu }: { menu?: Array<Omit<menuItem, 'qty'>> } = $props();

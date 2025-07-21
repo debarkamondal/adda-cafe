@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toastStore } from './../states/toast.svelte';
+	import { toastStore } from '../../states/toast.svelte';
 	import Toast from './Toast.svelte';
 
 	// Subscribe to toast store

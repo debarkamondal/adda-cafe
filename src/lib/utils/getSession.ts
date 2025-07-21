@@ -1,6 +1,6 @@
 import { PUBLIC_PEM } from '$env/static/public';
-import type { sessionInfo } from '../../types';
-import session from '../states/global.svelte';
+import type { sessionInfo } from '../../../types';
+import session from '../../states/global.svelte';
 const getSession = async (): Promise<sessionInfo | null> => {
 	try {
 		const keyString = PUBLIC_PEM.trim();

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Orders from '../components/Orders.svelte';
+	import Orders from '$lib/components/Orders.svelte';
 	import { Canvas } from '@threlte/core';
-	import TableCanvas from '../components/TableCanvas.svelte';
+	import TableCanvas from '$lib/components/TableCanvas.svelte';
 	import { fade } from 'svelte/transition';
-	import session from '../states/global.svelte';
+	import session from '../../states/global.svelte';
 
 	let innerHeight = $state(10000);
 </script>

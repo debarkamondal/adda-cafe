@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fade, slide } from 'svelte/transition';
-	import Card from '../../../components/Card.svelte';
+	import Card from '$lib/components/Card.svelte';
 	import { browser } from '$app/environment';
 
 	// let actions = $state([

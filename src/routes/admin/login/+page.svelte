@@ -5,9 +5,9 @@
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 	import { toastStore } from '../../../states/toast.svelte';
-	import getSession from '../../../utils/getSession';
+	import getSession from '$lib/utils/getSession';
 	import session from '../../../states/global.svelte';
-	import Card from '../../../components/Card.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	let formData = $state<{
 		username: string | null;
