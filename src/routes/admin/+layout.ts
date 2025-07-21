@@ -6,6 +6,6 @@ export const prerender = true;
 
 export const load: LayoutLoad = async () => {
 	if (browser) {
-		const data = await getSession();
+		await getSession();
 	}
 };
