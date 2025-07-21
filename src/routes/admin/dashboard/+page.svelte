@@ -2,7 +2,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import Card from '$lib/components/Card.svelte';
 	import { browser } from '$app/environment';
-	import { PUBLIC_BACKEND_URL } from '$env/static/public';}
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 	// let actions = $state([
 	// 	{
@@ -41,6 +41,7 @@
 			return false;
 		});
 		const url= PUBLIC_BACKEND_URL.split(":")[0].replace('http','ws')
+		console.log(url)
 		const ws = new WebSocket(url);
 		ws.onopen = async () => {
 			status = 'connected';
