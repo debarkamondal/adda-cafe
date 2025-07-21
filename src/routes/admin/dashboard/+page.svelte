@@ -40,7 +40,7 @@
 			}
 			return false;
 		});
-		const url= PUBLIC_BACKEND_URL.split(":")[0].replace('http','ws')
+		const url= PUBLIC_BACKEND_URL.replace('http','ws')
 		console.log(url)
 		const ws = new WebSocket(url);
 		ws.onopen = async () => {
