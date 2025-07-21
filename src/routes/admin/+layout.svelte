@@ -36,9 +36,4 @@
 </Drawer>
 <Dialog bind:dialog bind:transitionOpen>
 	<ProductForm />
-	<!-- <h2 class="text-accent-400">Confirm Order</h2> -->
-	<!-- <div class="bg-accent-300 my-2 h-px"></div> -->
-	<!-- <p>Are you sure?</p> -->
-	<!-- <p>Order once place can't be cancelled.</p> -->
-	<!-- <button class="bg-accent-600 mx-auto mt-4 h-12 w-48 rounded-md">Confirm</button> -->
 </Dialog>

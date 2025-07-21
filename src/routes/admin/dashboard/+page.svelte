@@ -2,6 +2,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import Card from '$lib/components/Card.svelte';
 	import { browser } from '$app/environment';
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';}
 
 	// let actions = $state([
 	// 	{
@@ -39,7 +40,8 @@
 			}
 			return false;
 		});
-		const ws = new WebSocket(`ws://localhost:8080/adda/admin/ws?X-CSRF-TOKEN=${csrfToken}`);
+		const url= PUBLIC_BACKEND_URL.split(":")[0].replace('http','ws')
+		const ws = new WebSocket(url);
 		ws.onopen = async () => {
 			status = 'connected';
 			setTimeout(() => (status = 'loaded'), 2000);
