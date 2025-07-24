@@ -4,6 +4,9 @@
 	import { browser } from '$app/environment';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import Dialog from '$lib/components/Dialog.svelte';
+	import { toastStore } from '../../../states/toast.svelte';
+	import getCookies from '$lib/utils/getCookies';
+	import { goto } from '$app/navigation';
 
 	// let actions = $state([
 	// 	{
@@ -16,9 +19,11 @@
 	// 	}
 	// ]);
 	let dialogRef = $state<HTMLDialogElement>();
+	let actionOpened = $state<number | null>(null);
 	let transitionOpen = $state(false);
 	let reason = $state('');
 	let status = $state<'connecting' | 'connected' | 'loading' | 'loaded'>('connecting');
+	let actionId = $state<string>();
 	let actions = $state<
 		{
 			type: 'session';
@@ -28,7 +33,36 @@
 		}[]
 	>([]);
 
-	let actionOpened = $state();
+	const deletePendingSession = async (e: SubmitEvent) => {
+		e.preventDefault();
+		if (!reason) return toastStore.error('No reason provided');
+		if (!actionId) return toastStore.error('No action selected');
+		const csrfToken = getCookies('csrf_token');
+		if (!csrfToken) {
+			goto('/admin/login');
+			return;
+		}
+		const res = await fetch(`${PUBLIC_BACKEND_URL}/admin/pending`, {
+			credentials: 'include',
+			method: 'DELETE',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			},
+			body: JSON.stringify({
+				id: actionId.split(':')[1],
+				type: 'session',
+				reason
+			})
+		});
+		if (res.status === 204) {
+			actions = actions.filter((_, id) => id !== actionOpened);
+			actionOpened = null;
+			transitionOpen = false;
+			dialogRef?.close();
+			toastStore.success('Marked as read.');
+		}
+	};
+
 	const handleActionExpansion = (index: number) => {
 		actionOpened = actionOpened === index ? null : index;
 	};
@@ -138,15 +172,17 @@
 									>
 									<span><span class="mr-1 font-semibold">Id:</span>{id}</span>
 								</p>
-								<div class="text-accent-50 -mx-2 mt-2 flex justify-around gap-2">
+								<div class="text-accent-50 -mx-2 mt-2 flex items-center justify-around gap-2">
 									<button
-										class="bg-accent-900 mx-auto h-12 rounded-md p-2 px-4"
+										class="bg-accent-600 flex grow items-center justify-center gap-2 rounded-md p-2 px-4"
 										onclick={() => {
-											dialogRef?.showModal();
+											actionId = id;
 											transitionOpen = true;
-										}}><img alt="trash-icon" src="/icons/trash.svg" /></button
+											dialogRef?.showModal();
+										}}
+										><img alt="trash-icon" src="/icons/trash.svg" class="mb-1" />Mark as read</button
 									>
-									<button class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4">Accept</button
+									<!-- <button class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4">Accept</button -->
 									>
 								</div>
 							</div>
@@ -159,7 +195,7 @@
 </section>
 <Dialog title="Revoke session?" bind:dialogRef bind:transitionOpen>
 	<p class="text-center text-lg font-semibold">Why do you want to revoke session?</p>
-	<form class="text-center">
+	<form onsubmit={deletePendingSession} class="text-center">
 		<input
 			type="text"
 			id="reason"

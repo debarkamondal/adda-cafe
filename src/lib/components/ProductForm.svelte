@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+	import getCookies from '$lib/utils/getCookies';
 	import { toastStore } from '../../states/toast.svelte';
 	// interface FormData {
 	// 	name: string;
@@ -101,17 +102,8 @@
 		// };
 
 		try {
-			let csrfToken: string = '';
-			const cookies = document.cookie;
-			cookies.split(';').some((cookie) => {
-				const [name, value] = cookie.split('=');
-				if (name === 'csrf_token') {
-					csrfToken = value;
-					return true;
-				}
-				return false;
-			});
-			if (csrfToken === '') throw Error('Unauthorized');
+			const csrfToken = getCookies('csrf_token');
+			if (!csrfToken) throw Error('Unauthorized');
 
 			const res = await fetch(`${PUBLIC_BACKEND_URL}/admin/menu`, {
 				credentials: 'include',
