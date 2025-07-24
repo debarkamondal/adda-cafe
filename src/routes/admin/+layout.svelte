@@ -9,7 +9,7 @@
 	let innerHeight = $state(0);
 	let transitionOpen = $state(false);
 	let { children } = $props();
-	let dialog = $state<HTMLDialogElement>();
+	let dialogRef = $state<HTMLDialogElement>();
 </script>
 
 <svelte:head>
@@ -27,13 +27,13 @@
 		<button
 			class="bg-accent-600 flex h-8 w-18 cursor-pointer items-center justify-center rounded-md"
 			onclick={() => {
-				dialog?.showModal();
+				dialogRef?.showModal();
 				transitionOpen = true;
 			}}>Add+</button
 		>
 	</div>
 	<Menu />
 </Drawer>
-<Dialog bind:dialog bind:transitionOpen>
+<Dialog bind:dialogRef bind:transitionOpen title="Add an item">
 	<ProductForm />
 </Dialog>
