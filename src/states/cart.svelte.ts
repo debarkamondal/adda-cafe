@@ -1,11 +1,5 @@
-type menuItem = {
-	id: string;
-	title: string;
-	image: string;
-	price: number;
-	qty: number;
-	description?: string;
-};
+import type { menuItem } from '../../types';
+
 class Cart {
 	public items = $state<menuItem[]>([]);
 
@@ -33,4 +27,4 @@ class Cart {
 }
 
 const cart = new Cart();
-export { cart, type menuItem };
+export { cart };

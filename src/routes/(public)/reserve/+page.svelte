@@ -132,11 +132,11 @@
 						placeholder="Phone number"
 						bind:value={formData.phone}
 					/>
-					<div class="mt-4 flex">
-						<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
-							>Submit</button
-						>
-					</div>
+				</div>
+				<div class="mt-4 flex">
+					<button onclick={handleSubmit} class="bg-accent-600 mx-auto h-12 w-48 rounded-md"
+						>Submit</button
+					>
 				</div>
 			</form>
 		</Card>

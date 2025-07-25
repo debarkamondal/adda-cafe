@@ -8,16 +8,6 @@
 	import getCookies from '$lib/utils/getCookies';
 	import { goto } from '$app/navigation';
 
-	// let actions = $state([
-	// 	{
-	// 		name: 'Order 1',
-	// 		description: 'description 1'
-	// 	},
-	// 	{
-	// 		name: 'Order 2',
-	// 		description: 'description 2'
-	// 	}
-	// ]);
 	let dialogRef = $state<HTMLDialogElement>();
 	let actionOpened = $state<number | null>(null);
 	let transitionOpen = $state(false);
@@ -33,9 +23,7 @@
 		}[]
 	>([]);
 
-	const deletePendingSession = async (e: SubmitEvent) => {
-		e.preventDefault();
-		if (!reason) return toastStore.error('No reason provided');
+	const acceptSession = async () => {
 		if (!actionId) return toastStore.error('No action selected');
 		const csrfToken = getCookies('csrf_token');
 		if (!csrfToken) {
@@ -50,6 +38,34 @@
 			},
 			body: JSON.stringify({
 				id: actionId.split(':')[1],
+				type: 'session'
+			})
+		});
+		if (res.status === 204) {
+			actions = actions.filter((_, id) => id !== actionOpened);
+			actionOpened = null;
+			transitionOpen = false;
+			dialogRef?.close();
+			toastStore.success('Session accepted');
+		}
+	};
+	const flagPendingSession = async (e: SubmitEvent) => {
+		e.preventDefault();
+		if (!reason) return toastStore.error('No reason provided');
+		if (!actionId) return toastStore.error('No action selected');
+		const csrfToken = getCookies('csrf_token');
+		if (!csrfToken) {
+			goto('/admin/login');
+			return;
+		}
+		const res = await fetch(`${PUBLIC_BACKEND_URL}/admin/pending`, {
+			credentials: 'include',
+			method: 'PUT',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			},
+			body: JSON.stringify({
+				id: actionId.split(':')[1],
 				type: 'session',
 				reason
 			})
@@ -59,7 +75,7 @@
 			actionOpened = null;
 			transitionOpen = false;
 			dialogRef?.close();
-			toastStore.success('Marked as read.');
+			toastStore.success('Session flagged');
 		}
 	};
 
@@ -68,18 +84,11 @@
 	};
 
 	if (browser) {
-		let cookies = document.cookie.split(';');
-		let csrfToken: string = '';
-		cookies.some((cookie: string) => {
-			cookie = cookie.trim();
-			const name = cookie.slice(0, cookie.indexOf('='));
-			const value = cookie.slice(cookie.indexOf('=') + 1, cookie.length);
-			if (name.trim() == 'csrf_token') {
-				csrfToken = value;
-				return true;
-			}
-			return false;
-		});
+		let csrfToken = getCookies('csrf_token');
+		if (!csrfToken) {
+			if (!csrfToken) toastStore.error('Unauthorized. please log in again');
+			goto('/admin/login');
+		}
 		const url = PUBLIC_BACKEND_URL.replace('http', 'ws') + `/admin/ws?X-CSRF-TOKEN=${csrfToken}`;
 		const ws = new WebSocket(url);
 		ws.onopen = async () => {
@@ -174,15 +183,19 @@
 								</p>
 								<div class="text-accent-50 -mx-2 mt-2 flex items-center justify-around gap-2">
 									<button
-										class="bg-accent-600 flex grow items-center justify-center gap-2 rounded-md p-2 px-4"
+										class="bg-accent-900 rounded-md p-2 px-4"
 										onclick={() => {
 											actionId = id;
 											transitionOpen = true;
 											dialogRef?.showModal();
-										}}
-										><img alt="trash-icon" src="/icons/trash.svg" class="mb-1" />Mark as read</button
+										}}><img alt="trash-icon" src="/icons/trash.svg" class="mb-1" /></button
 									>
-									<!-- <button class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4">Accept</button -->
+									<button
+										class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4"
+										onclick={() => {
+											actionId = id;
+											acceptSession();
+										}}>Accept</button
 									>
 								</div>
 							</div>
@@ -195,7 +208,7 @@
 </section>
 <Dialog title="Revoke session?" bind:dialogRef bind:transitionOpen>
 	<p class="text-center text-lg font-semibold">Why do you want to revoke session?</p>
-	<form onsubmit={deletePendingSession} class="text-center">
+	<form onsubmit={flagPendingSession} class="text-center">
 		<input
 			type="text"
 			id="reason"

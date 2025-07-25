@@ -5,6 +5,7 @@
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
 	import Dialog from '$lib/components/Dialog.svelte';
 	import ProductForm from '$lib/components/ProductForm.svelte';
+	import menu from '../../states/menu.svelte';
 
 	let innerHeight = $state(0);
 	let transitionOpen = $state(false);
@@ -32,8 +33,8 @@
 			}}>Add+</button
 		>
 	</div>
-	<Menu />
+	<Menu {menu} />
 </Drawer>
 <Dialog bind:dialogRef bind:transitionOpen title="Add an item">
-	<ProductForm />
+	<ProductForm {dialogRef} {transitionOpen} />
 </Dialog>

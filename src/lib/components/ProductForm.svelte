@@ -2,13 +2,6 @@
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import getCookies from '$lib/utils/getCookies';
 	import { toastStore } from '../../states/toast.svelte';
-	// interface FormData {
-	// 	name: string;
-	// 	description: string;
-	// 	image: File | null;
-	// 	price: number;
-	// 	inStock: boolean;
-	// }
 
 	interface ValidationErrors {
 		name?: string;
@@ -16,6 +9,9 @@
 		image?: string;
 		price?: string;
 	}
+
+	let { dialogRef, transitionOpen }: { dialogRef?: HTMLDialogElement; transitionOpen: boolean } =
+		$props();
 
 	let menuItem = $state<{
 		name: string;
@@ -105,7 +101,7 @@
 			const csrfToken = getCookies('csrf_token');
 			if (!csrfToken) throw Error('Unauthorized');
 
-			const res = await fetch(`${PUBLIC_BACKEND_URL}/admin/menu`, {
+			let res = await fetch(`${PUBLIC_BACKEND_URL}/admin/menu`, {
 				credentials: 'include',
 				headers: {
 					'X-CSRF-TOKEN': csrfToken
@@ -122,11 +118,16 @@
 				id: string;
 				url: string;
 			} = await res.json();
-			await fetch(result.url, {
+			res = await fetch(result.url, {
 				method: 'PUT',
 				body: menuItem.image,
 				headers: { 'Content-Type': menuItem.image?.type as string }
 			});
+			if (res.status === 200) {
+				toastStore.success('Item added to menu.');
+				transitionOpen = false;
+				dialogRef?.close();
+			}
 		} catch (error) {
 			toastStore.error(`Couldn't create product:${error}`);
 		}
