@@ -61,8 +61,8 @@
 		</span>
 	</p>
 </h1>
-<div class="absolute top-0 flex h-full flex-col justify-center gap-4">
-	<Card class="py-8">
+<section class="absolute top-0 flex h-full w-full items-center justify-center">
+	<Card class="m-4 py-8">
 		<h2 class="text-center text-2xl font-semibold">Admin Login</h2>
 		<form class="my-4 space-y-4 space-x-2">
 			<div class="flex gap-2">
@@ -93,4 +93,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</section>
