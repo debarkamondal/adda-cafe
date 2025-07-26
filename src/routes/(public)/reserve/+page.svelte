@@ -103,7 +103,7 @@
 </h1>
 {#if !token}
 	<span>{token}</span>
-	<video bind:this={videoElement} class="mx-auto w-96 p-2" oncanplay={handleCanPlay}>
+	<video bind:this={videoElement} class="mx-auto size-96 p-2" oncanplay={handleCanPlay}>
 		<track kind="captions" />
 	</video>
 {/if}

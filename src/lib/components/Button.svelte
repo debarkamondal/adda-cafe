@@ -6,7 +6,7 @@
 		children,
 		class: className,
 		...attrs
-	}: { children?: Snippet; class: ClassValue } & HTMLButtonAttributes = $props();
+	}: { children?: Snippet; class?: ClassValue } & HTMLButtonAttributes = $props();
 </script>
 
 <button

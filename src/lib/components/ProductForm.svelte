@@ -2,6 +2,8 @@
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import getCookies from '$lib/utils/getCookies';
 	import { toastStore } from '../../states/toast.svelte';
+	import Button from './Button.svelte';
+	import Dialog from './Dialog.svelte';
 
 	interface ValidationErrors {
 		name?: string;
@@ -10,9 +12,18 @@
 		price?: string;
 	}
 
-	let { dialogRef, transitionOpen }: { dialogRef?: HTMLDialogElement; transitionOpen: boolean } =
-		$props();
+	let {
+		dialogRef,
+		transitionOpen,
+		id
+	}: {
+		dialogRef?: HTMLDialogElement;
+		id?: string;
+		transitionOpen?: boolean;
+	} = $props();
 
+	let confirmPopupRef = $state<HTMLDialogElement>();
+	let confirmPopupTransition = $state<boolean>(false);
 	let menuItem = $state<{
 		name: string;
 		description: string;
@@ -30,7 +41,6 @@
 		imagePreview: '',
 		errors: {}
 	});
-
 	function validateForm(): boolean {
 		const newErrors: ValidationErrors = {};
 
@@ -233,11 +243,19 @@
 		</div>
 	</div>
 
-	<!-- Submit Buttons -->
+	{#if id}
+		<Button
+			class="bg-accent-800 w-full"
+			onclick={() => {
+				confirmPopupTransition = true;
+				confirmPopupRef?.showModal();
+			}}><img src="/icons/trash.svg" class="mx-2" alt="delete item" />Delete Item</Button
+		>
+	{/if}
 	<div class="flex gap-4 pt-4">
 		<button
 			type="submit"
-			class="bg-accent-600 flex-1 rounded-md px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+			class="bg-accent-600 hover:bg-accent-700 focus:ring-accent-500 flex-1 rounded-md px-4 py-2 font-medium text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
 		>
 			Add Product
 		</button>
@@ -251,3 +269,23 @@
 		</button>
 	</div>
 </form>
+{#if id}
+	<Dialog
+		bind:dialogRef={confirmPopupRef}
+		bind:transitionOpen={confirmPopupTransition}
+		title="Delete item"
+	>
+		<section class="text-center">
+			<p class="text-xl font-semibold">Are you sure?</p>
+			<p>Once deleted can't be recovered.</p>
+			<Button
+				onclick={async (e) => {
+					e.preventDefault();
+					console.log(id);
+					confirmPopupTransition = false;
+				}}
+				class="mx-auto mt-4 w-32">Confirm</Button
+			>
+		</section>
+	</Dialog>
+{/if}

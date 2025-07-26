@@ -7,6 +7,7 @@
 	import { toastStore } from '../../../states/toast.svelte';
 	import getCookies from '$lib/utils/getCookies';
 	import { goto } from '$app/navigation';
+	import Button from '$lib/components/Button.svelte';
 
 	let dialogRef = $state<HTMLDialogElement>();
 	let actionOpened = $state<number | null>(null);
@@ -112,7 +113,7 @@
 	<h1 transition:fade class="m-4 mt-16 text-4xl font-semibold">Dashboard</h1>
 	<Card
 		class={[
-			'my-8 min-h-24',
+			'mx-4 my-8 min-h-24',
 			actions?.length < 1
 				? 'text-primary-700 flex items-center justify-center border-dashed'
 				: 'items-left block'

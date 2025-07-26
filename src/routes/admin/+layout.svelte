@@ -12,7 +12,8 @@
 
 	let innerHeight = $state(0);
 	let transitionOpen = $state(false);
-	let descIndex = $state();
+	let descIndex = $state<number | null>();
+	let editId = $state<string>('');
 	let { children } = $props();
 	let dialogRef = $state<HTMLDialogElement>();
 </script>
@@ -32,8 +33,10 @@
 		<button
 			class="bg-accent-600 flex h-8 w-18 cursor-pointer items-center justify-center rounded-md"
 			onclick={() => {
+				editId = '';
 				dialogRef?.showModal();
 				transitionOpen = true;
+				mode = 'add';
 			}}>Add+</button
 		>
 	</div>
@@ -66,14 +69,19 @@
 							{/if}
 						</summary>
 					</div>
-					<Button class="col-span-2 flex h-12 items-center justify-center self-center text-center"
-						><img src="/icons/trash.svg" alt="trash icon" /></Button
+					<Button
+						class="col-span-2 flex h-12 items-center justify-center self-center text-center"
+						onclick={() => {
+							editId = item.id;
+							dialogRef?.showModal();
+							transitionOpen = true;
+						}}><img src="/icons/pencil.svg" alt="edit icon" /></Button
 					>
 				</Card>
 			{/each}
 		{/if}
 	</main>
 </Drawer>
-<Dialog bind:dialogRef bind:transitionOpen title="Add an item">
-	<ProductForm {dialogRef} {transitionOpen} />
+<Dialog bind:dialogRef bind:transitionOpen title={editId ? 'Edit Item' : 'Add Item'}>
+	<ProductForm {dialogRef} {transitionOpen} id={editId} />
 </Dialog>
