@@ -26,8 +26,12 @@
 			<div class="rounded-lg p-6 shadow-md">
 				<div transition:fade onoutroend={() => dialogRef?.close()}>
 					{@render children()}
-					<form onsubmit={() => (transitionOpen = false)}>
-						<button class="text-accent-400 absolute top-2 right-4" type="submit">X</button>
+					<form>
+						<button
+							onclick={() => (transitionOpen = false)}
+							class="text-accent-400 absolute top-2 right-4"
+							type="button">X</button
+						>
 					</form>
 				</div>
 			</div>

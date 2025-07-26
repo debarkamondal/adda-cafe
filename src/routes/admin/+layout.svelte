@@ -36,7 +36,6 @@
 				editId = '';
 				dialogRef?.showModal();
 				transitionOpen = true;
-				mode = 'add';
 			}}>Add+</button
 		>
 	</div>
@@ -83,5 +82,5 @@
 	</main>
 </Drawer>
 <Dialog bind:dialogRef bind:transitionOpen title={editId ? 'Edit Item' : 'Add Item'}>
-	<ProductForm {dialogRef} {transitionOpen} id={editId} />
+	<ProductForm {dialogRef} bind:transitionOpen id={editId} />
 </Dialog>

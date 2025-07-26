@@ -14,7 +14,7 @@
 
 	let {
 		dialogRef,
-		transitionOpen,
+		transitionOpen = $bindable(),
 		id
 	}: {
 		dialogRef?: HTMLDialogElement;
@@ -283,6 +283,7 @@
 					e.preventDefault();
 					console.log(id);
 					confirmPopupTransition = false;
+					transitionOpen = false;
 				}}
 				class="mx-auto mt-4 w-32">Confirm</Button
 			>
