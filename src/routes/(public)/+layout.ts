@@ -6,7 +6,7 @@ import type { LayoutLoad } from './$types';
 
 export const prerender = true;
 
-export const load: LayoutLoad = async () => {
+export const load: LayoutLoad = async ({ fetch }) => {
 	const res = await fetch(`${PUBLIC_BACKEND_URL}/menu`);
 	menu.push(...(await res.json()));
 	if (browser) {
