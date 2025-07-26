@@ -3,7 +3,7 @@
 
 	let { children, innerHeight }: { children: Snippet; innerHeight: number } = $props();
 
-	let isExpanded = $state(false);
+	let isExpanded = $state(true);
 	let barCoord = $derived.by(() => {
 		if (isExpanded) return innerHeight * 0.1;
 		else return innerHeight * 0.9;

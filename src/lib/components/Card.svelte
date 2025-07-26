@@ -9,7 +9,7 @@
 <div
 	transition:fade
 	class={[
-		'bg-primary-900 border-accent-200 mx-4 rounded-xl border p-4  transition-transform',
+		'bg-primary-900 border-accent-200 rounded-xl border p-4  transition-transform',
 		props.class
 	]}
 >
