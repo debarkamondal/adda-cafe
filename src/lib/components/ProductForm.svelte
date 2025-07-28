@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+	import { PUBLIC_BACKEND_URL, PUBLIC_BUCKET_URL } from '$env/static/public';
 	import getCookies from '$lib/utils/getCookies';
 	import { toastStore } from '../../states/toast.svelte';
 	import Button from './Button.svelte';
 	import Dialog from './Dialog.svelte';
+	import type { menuItem as menuItemType } from '../../../types';
 
 	interface ValidationErrors {
 		name?: string;
@@ -25,15 +26,15 @@
 	let confirmPopupRef = $state<HTMLDialogElement>();
 	let confirmPopupTransition = $state<boolean>(false);
 	let menuItem = $state<{
-		name: string;
-		description: string;
+		title: string;
+		description?: string;
 		image: File | null;
 		price: string;
 		inStock: boolean;
 		imagePreview: string;
 		errors: ValidationErrors;
 	}>({
-		name: '',
+		title: '',
 		description: '',
 		image: null,
 		price: '',
@@ -41,14 +42,24 @@
 		imagePreview: '',
 		errors: {}
 	});
+
+	if (id) {
+		fetch(`${PUBLIC_BACKEND_URL}/menu/${id}`).then(async (res) => {
+			const data: menuItemType = await res.json();
+			menuItem.description = data.description;
+			menuItem.title = data.title;
+			menuItem.price = `${data.price}`;
+			menuItem.imagePreview = `${PUBLIC_BUCKET_URL}/menu/${data.id}`;
+		});
+	}
 	function validateForm(): boolean {
 		const newErrors: ValidationErrors = {};
 
-		if (!menuItem.name.trim()) {
+		if (!menuItem.title.trim()) {
 			newErrors.name = 'Name is required';
 		}
 
-		if (!menuItem.description.trim()) {
+		if (!menuItem.description?.trim()) {
 			newErrors.description = 'Description is required';
 		}
 
@@ -118,7 +129,7 @@
 				},
 				method: 'POST',
 				body: JSON.stringify({
-					title: menuItem.name,
+					title: menuItem.title,
 					image: menuItem.image?.name,
 					price: parseInt(menuItem.price),
 					description: menuItem.description
@@ -144,7 +155,7 @@
 	}
 
 	function resetForm(): void {
-		menuItem.name = '';
+		menuItem.title = '';
 		menuItem.description = '';
 		menuItem.image = null;
 		menuItem.price = '';
@@ -161,7 +172,7 @@
 		<input
 			type="text"
 			id="name"
-			bind:value={menuItem.name}
+			bind:value={menuItem.title}
 			class="border-accent-300 bg-accent-50 text-primary-950 focus:border-accent-300 focus:ring-accent-300 w-full rounded-md border px-3 py-2 shadow-sm transition-colors focus:ring-2 focus:outline-none"
 			class:border-red-500={menuItem.errors.name}
 			placeholder="Enter product name"

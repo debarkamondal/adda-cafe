@@ -7,8 +7,12 @@ import type { LayoutLoad } from './$types';
 export const prerender = true;
 
 export const load: LayoutLoad = async ({ fetch }) => {
-	const res = await fetch(`${PUBLIC_BACKEND_URL}/menu`);
-	menu.push(...(await res.json()));
+	try{
+		const res = await fetch(`${PUBLIC_BACKEND_URL}/menu`);
+		menu.push(...(await res.json()));
+	}catch(error){
+	console.error("Couldn't fetch menu")
+	}
 	if (browser) {
 		await getSession();
 	}
