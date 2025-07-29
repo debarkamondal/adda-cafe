@@ -14,6 +14,7 @@
 	let transitionOpen = $state(false);
 	let descIndex = $state<number | null>();
 	let editId = $state<string>('');
+	let imgType = $state<string>('');
 	let { children } = $props();
 	let dialogRef = $state<HTMLDialogElement>();
 </script>
@@ -40,8 +41,8 @@
 		>
 	</div>
 	<main class="mx-1 my-4 space-y-2">
-		{#if menu}
-			{#each menu as item, index (item.id)}
+		{#if menu.items.length > 0}
+			{#each menu.items as item, index (item.id)}
 				<Card class="bg-secondary-900 grid grid-cols-12 gap-4 rounded-md p-2">
 					<img
 						src={`${PUBLIC_BUCKET_URL}/menu/${item.image}`}
@@ -72,15 +73,18 @@
 						class="col-span-2 flex h-12 items-center justify-center self-center text-center"
 						onclick={() => {
 							editId = item.id;
+							imgType = item.image.split('.')[item.image.split('.').length - 1];
 							dialogRef?.showModal();
 							transitionOpen = true;
 						}}><img src="/icons/pencil.svg" alt="edit icon" /></Button
 					>
 				</Card>
 			{/each}
+		{:else}
+			<div class="text-primary-700 my-8 text-center text-xl">Empty Menu</div>
 		{/if}
 	</main>
 </Drawer>
 <Dialog bind:dialogRef bind:transitionOpen title={editId ? 'Edit Item' : 'Add Item'}>
-	<ProductForm {dialogRef} bind:transitionOpen id={editId} />
+	<ProductForm {dialogRef} {imgType} bind:transitionOpen id={editId} />
 </Dialog>

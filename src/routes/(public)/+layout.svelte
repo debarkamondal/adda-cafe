@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../../app.css';
 	import Drawer from '$lib/components/Drawer.svelte';
-	import Menu from '$lib/components/Menu.svelte';
 	import { cart } from '../../states/cart.svelte';
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
 	import menu from '../../states/menu.svelte';
@@ -77,8 +76,8 @@
 	{/if}
 	<h1 class="mx-2 text-3xl font-semibold">Menu</h1>
 	<main class="mx-1 my-4 space-y-2">
-		{#if menu}
-			{#each menu as item, index (item.id)}
+		{#if menu.items.length > 0}
+			{#each menu.items as item, index (item.id)}
 				<Card class="bg-secondary-900 grid grid-cols-12 gap-4 rounded-md p-2">
 					<img
 						src={`${PUBLIC_BUCKET_URL}/menu/${item.image}`}
@@ -108,6 +107,8 @@
 					<AddToCartButton item={{ ...item, qty: 0 }} />
 				</Card>
 			{/each}
+		{:else}
+			<div class="text-primary-700 my-8 text-center text-xl">Empty Menu</div>
 		{/if}
 	</main>
 </Drawer>

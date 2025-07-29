@@ -5,6 +5,7 @@
 	import Button from './Button.svelte';
 	import Dialog from './Dialog.svelte';
 	import type { menuItem as menuItemType } from '../../../types';
+	import menu from '../../states/menu.svelte';
 
 	interface ValidationErrors {
 		name?: string;
@@ -15,11 +16,13 @@
 
 	let {
 		dialogRef,
+		imgType,
 		transitionOpen = $bindable(),
 		id
 	}: {
 		dialogRef?: HTMLDialogElement;
 		id?: string;
+		imgType?: string;
 		transitionOpen?: boolean;
 	} = $props();
 
@@ -43,13 +46,13 @@
 		errors: {}
 	});
 
-	if (id) {
+	if (id && imgType) {
 		fetch(`${PUBLIC_BACKEND_URL}/menu/${id}`).then(async (res) => {
 			const data: menuItemType = await res.json();
 			menuItem.description = data.description;
 			menuItem.title = data.title;
 			menuItem.price = `${data.price}`;
-			menuItem.imagePreview = `${PUBLIC_BUCKET_URL}/menu/${data.id}`;
+			menuItem.imagePreview = `${PUBLIC_BUCKET_URL}/menu/${data.id}.${imgType}`;
 		});
 	}
 	function validateForm(): boolean {
@@ -74,7 +77,27 @@
 		menuItem.errors = newErrors;
 		return Object.keys(newErrors).length === 0;
 	}
-
+	function handleDelete(e: Event) {
+		e.preventDefault();
+		const csrfToken = getCookies('csrf_token');
+		if (!csrfToken) throw Error('Unauthorized');
+		if (!id) return toastStore.error('Some error happened');
+		fetch(`${PUBLIC_BACKEND_URL}/admin/menu/${id}`, {
+			method: 'DELETE',
+			credentials: 'include',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
+		}).then(async (data) => {
+			if (data.status === 204) {
+				confirmPopupTransition = false;
+				transitionOpen = false;
+				menu.items.filter((item) => item.id !== id);
+				menu.deleteItem(id);
+				toastStore.success('Item deleted...');
+			}
+		});
+	}
 	function handleImageChange(event: Event): void {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
@@ -129,10 +152,10 @@
 				},
 				method: 'POST',
 				body: JSON.stringify({
-					title: menuItem.title,
-					image: menuItem.image?.name,
+					title: menuItem.title.trim(),
+					image: menuItem.image?.name.trim(),
 					price: parseInt(menuItem.price),
-					description: menuItem.description
+					description: menuItem.description?.trim()
 				})
 			});
 			const result: {
@@ -145,7 +168,16 @@
 				headers: { 'Content-Type': menuItem.image?.type as string }
 			});
 			if (res.status === 200) {
+				const imageExtn =
+					menuItem.image?.name.split('.')[menuItem.image?.name.split('.').length - 1];
 				toastStore.success('Item added to menu.');
+				menu.addItem({
+					id: result.id,
+					image: `${result.id}.${imageExtn}`,
+					title: menuItem.title,
+					price: parseInt(menuItem.price),
+					description: menuItem.description
+				});
 				transitionOpen = false;
 				dialogRef?.close();
 			}
@@ -289,15 +321,7 @@
 		<section class="text-center">
 			<p class="text-xl font-semibold">Are you sure?</p>
 			<p>Once deleted can't be recovered.</p>
-			<Button
-				onclick={async (e) => {
-					e.preventDefault();
-					console.log(id);
-					confirmPopupTransition = false;
-					transitionOpen = false;
-				}}
-				class="mx-auto mt-4 w-32">Confirm</Button
-			>
+			<Button onclick={handleDelete} class="mx-auto mt-4 w-32">Confirm</Button>
 		</section>
 	</Dialog>
 {/if}
