@@ -5,11 +5,13 @@
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
 	import menu from '../../states/menu.svelte';
 	import Card from '$lib/components/Card.svelte';
-	import { PUBLIC_BUCKET_URL } from '$env/static/public';
+	import { PUBLIC_BACKEND_URL, PUBLIC_BUCKET_URL } from '$env/static/public';
 	import { fade, slide } from 'svelte/transition';
 	import AddToCartButton from '$lib/components/AddToCartButton.svelte';
 	import Dialog from '$lib/components/Dialog.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import getCookies from '$lib/utils/getCookies';
+	import type { order } from '../../../types';
 
 	let { children } = $props();
 
@@ -17,6 +19,30 @@
 	let transitionOpen = $state<boolean>(false);
 	let innerHeight = $state(0);
 	let descIndex = $state();
+	let note = $state<string>();
+
+	const placeOrder = () => {
+		const csrfToken = getCookies('csrf_token');
+		if (!csrfToken) throw Error('Unauthorized');
+		const payload: Omit<order, 'id' | 'createdAt' | 'sessionId'> = {
+			items: cart.items.map((item) => {
+				return {
+					id: item.id,
+					qty: item.qty
+				};
+			})
+		};
+		if (note) payload.note = note;
+		const res = fetch(`${PUBLIC_BACKEND_URL}/order`, {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			},
+			body: JSON.stringify({ note: note, items: payload.items })
+		});
+		transitionOpen = false;
+	};
 </script>
 
 <svelte:head>
@@ -62,14 +88,19 @@
 					<AddToCartButton item={{ ...item, qty: 0 }} />
 				</Card>
 			{/each}
-			<div class="flex justify-center">
-				<button
-					class="bg-accent-600 mx-auto my-2 mb-4 h-12 w-48 rounded-md"
+			<div class="m-4 flex items-center justify-between">
+				<div class="flex flex-col font-semibold">
+					<span
+						>Amount:
+						<span class="font-bold">&#8377;{cart.getAmount()}</span></span
+					>
+				</div>
+				<Button
 					onclick={() => {
 						if (!dialogRef) return;
 						transitionOpen = true;
 						dialogRef.showModal();
-					}}>Place Order</button
+					}}>Place Order</Button
 				>
 			</div>
 		</section>
@@ -116,12 +147,15 @@
 	<section class="text-center">
 		<p class="text-xl font-semibold">Are you sure?</p>
 		<p>Order once place can't be cancelled.</p>
-		<Button
-			onclick={async (e) => {
-				e.preventDefault();
-				transitionOpen = false;
-			}}
-			class="mx-auto mt-4 w-32">Confirm</Button
-		>
+		<form onsubmit={placeOrder} class="text-center">
+			<input
+				type="text"
+				id="note"
+				bind:value={note}
+				class="border-accent-300 bg-accent-50 text-primary-950 focus:border-accent-300 focus:ring-accent-300 my-2 w-full rounded-md border px-3 py-2 shadow-sm transition-colors focus:ring-2 focus:outline-none"
+				placeholder="Enter any instruction"
+			/>
+		</form>
+		<Button onclick={placeOrder} class="mx-auto mt-4 w-32">Confirm</Button>
 	</section>
 </Dialog>

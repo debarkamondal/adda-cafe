@@ -72,7 +72,7 @@
 
 {#if visible}
 	<div
-		class="animate-slide-in rounded-lg p-4 shadow-lg {toastStyles}"
+		class="animate-slide-in z-50 rounded-lg p-4 shadow-lg {toastStyles}"
 		role="alert"
 		aria-live="polite"
 	>

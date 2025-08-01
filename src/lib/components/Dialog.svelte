@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import ToastContainer from './ToastContainer.svelte';
 	let {
 		dialogRef = $bindable(),
 		children,

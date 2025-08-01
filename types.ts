@@ -10,3 +10,10 @@ export type menuItem = {
 	qty: number;
 	description?: string;
 };
+export type order = {
+	id: string;
+	note?: string;
+	sessionId: string;
+	createdAt: string;
+	items: Pick<menuItem, 'id' | 'qty'>[];
+};

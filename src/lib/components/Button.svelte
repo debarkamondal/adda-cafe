@@ -11,7 +11,7 @@
 
 <button
 	class={[
-		'bg-accent-600 hover:bg-accent-400 flex cursor-pointer items-center justify-center rounded-md p-2',
+		'bg-accent-600 hover:bg-accent-400 flex h-10 cursor-pointer items-center justify-center rounded-md p-2',
 		className
 	]}
 	{...attrs}

@@ -24,6 +24,9 @@ class Cart {
 		if (deleteIndex !== null) this.items = this.items.filter((_, index) => index !== deleteIndex);
 		window.localStorage.setItem('cart', JSON.stringify(this.items));
 	};
+	getAmount = () => {
+		return this.items.reduce((amount, item) => amount + item.price * item.qty, 0);
+	};
 }
 
 const cart = new Cart();

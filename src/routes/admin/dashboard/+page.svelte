@@ -8,11 +8,16 @@
 	import getCookies from '$lib/utils/getCookies';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
+	import QrDisplay from '$lib/components/QRDisplay.svelte';
 
-	let dialogRef = $state<HTMLDialogElement>();
+	let revokeDialogRef = $state<HTMLDialogElement>();
+	let tableDialogRef = $state<HTMLDialogElement>();
 	let actionOpened = $state<number | null>(null);
+	let tableOpened = $state<number | null>(null);
 	let transitionOpen = $state(false);
+	let tableTransitionOpen = $state(false);
 	let reason = $state('');
+	let tableName = $state('');
 	let status = $state<'connecting' | 'connected' | 'loading' | 'loaded'>('connecting');
 	let actionId = $state<string>();
 	let actions = $state<
@@ -23,6 +28,8 @@
 			[key: string]: any;
 		}[]
 	>([]);
+
+	let { data } = $props();
 
 	const acceptSession = async () => {
 		if (!actionId) return toastStore.error('No action selected');
@@ -46,9 +53,27 @@
 			actions = actions.filter((_, id) => id !== actionOpened);
 			actionOpened = null;
 			transitionOpen = false;
-			dialogRef?.close();
+			revokeDialogRef?.close();
 			toastStore.success('Session accepted');
 		}
+	};
+	const createTable = async () => {
+		const csrfToken = getCookies('csrf_token');
+		if (!csrfToken) {
+			goto('/admin/login');
+			return;
+		}
+		const res = await fetch(`${PUBLIC_BACKEND_URL}/admin/table/${tableName}`, {
+			credentials: 'include',
+			method: 'POST',
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
+		});
+		if (res.status === 200) {
+			tableTransitionOpen = false;
+			toastStore.success('Table Created.');
+		} else toastStore.error('Something went wrong.');
 	};
 	const flagPendingSession = async (e: SubmitEvent) => {
 		e.preventDefault();
@@ -75,7 +100,7 @@
 			actions = actions.filter((_, id) => id !== actionOpened);
 			actionOpened = null;
 			transitionOpen = false;
-			dialogRef?.close();
+			revokeDialogRef?.close();
 			toastStore.success('Session flagged');
 		}
 	};
@@ -188,7 +213,7 @@
 										onclick={() => {
 											actionId = id;
 											transitionOpen = true;
-											dialogRef?.showModal();
+											revokeDialogRef?.showModal();
 										}}><img alt="trash-icon" src="/icons/trash.svg" class="mb-1" /></button
 									>
 									<button
@@ -207,7 +232,67 @@
 		{/if}
 	</Card>
 </section>
-<Dialog title="Revoke session?" bind:dialogRef bind:transitionOpen>
+<div class="m-4 flex items-center justify-between">
+	<h2 transition:fade class="text-3xl font-semibold">Tables</h2>
+	<Button
+		class="px-4"
+		onclick={() => {
+			tableTransitionOpen = true;
+			tableDialogRef?.showModal();
+		}}>+ Add</Button
+	>
+</div>
+<section class="mx-2 grid grid-cols-2 gap-2">
+	{#each data.tables as table, index (index)}
+		<Card class="focus:bg-accent-800 hover:bg-accent-800 focus:ring-0 ">
+			<button
+				class="flex w-full justify-between focus:ring-0"
+				aria-label="Expand table card"
+				onclick={() => {
+					tableOpened = tableOpened === index ? null : index;
+				}}
+			>
+				<h3>Table: {table.title}</h3>
+				<svg
+					class="text-accent-200 h-5 w-5 transform transition-transform duration-200 {tableOpened ===
+					index
+						? 'rotate-180'
+						: ''}"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"
+					></path>
+				</svg>
+			</button>
+		</Card>
+		{#if tableOpened === index}
+			<div transition:slide class="col-span-2 overflow-x-hidden">
+				<Card class="flex flex-col space-y-2">
+					<h2 class="self-center text-2xl font-semibold underline">Table: {table.title}</h2>
+					<QrDisplay class="mb-4 max-w-64 self-center rounded-md" token={table.qrToken} />
+					<div class="border-accent-200 rounded-lg border p-4">
+						<p class="text-lg text-clip capitalize">
+							<span class="font-semibold">Available:</span>
+							{table.isAvailable}
+						</p>
+						<p class="text-lg text-clip capitalize">
+							<span class="font-semibold">Created by:</span>
+							{table.blame}
+						</p>
+						<p class="text-lg text-clip capitalize">
+							<span class="font-semibold">Updated At:</span>
+							{table.updatedAt}
+						</p>
+					</div>
+				</Card>
+			</div>
+		{/if}
+	{/each}
+</section>
+
+<Dialog title="Revoke session?" bind:dialogRef={revokeDialogRef} bind:transitionOpen>
 	<p class="text-center text-lg font-semibold">Why do you want to revoke session?</p>
 	<form onsubmit={flagPendingSession} class="text-center">
 		<input
@@ -218,5 +303,21 @@
 			placeholder="Enter reason"
 		/>
 		<button class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4">Revoke Session</button>
+	</form>
+</Dialog>
+<Dialog
+	title="Create Table"
+	bind:dialogRef={tableDialogRef}
+	bind:transitionOpen={tableTransitionOpen}
+>
+	<form onsubmit={createTable} class="text-center">
+		<input
+			type="text"
+			id="reason"
+			bind:value={tableName}
+			class="border-accent-300 bg-accent-50 text-primary-950 focus:border-accent-300 focus:ring-accent-300 my-2 w-full rounded-md border px-3 py-2 shadow-sm transition-colors focus:ring-2 focus:outline-none"
+			placeholder="Enter name"
+		/>
+		<button class="bg-accent-600 mx-auto h-12 grow rounded-md p-2 px-4">Create Table</button>
 	</form>
 </Dialog>
