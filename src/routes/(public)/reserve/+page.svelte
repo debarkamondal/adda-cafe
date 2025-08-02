@@ -43,6 +43,8 @@
 		videoElement.srcObject = await navigator.mediaDevices.getUserMedia({
 			video: { deviceId: videoInputDevice.deviceId }
 		});
+		const track = videoElement.srcObject.getVideoTracks()[0];
+		console.log(track.getCapabilities());
 		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
 		const url = new URL(res.getText());
 		if (url) {
