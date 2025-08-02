@@ -44,7 +44,12 @@
 			video: { deviceId: videoInputDevice.deviceId }
 		});
 		const track = videoElement.srcObject.getVideoTracks()[0];
-		console.log(track.getCapabilities());
+		if ('zoom' in track.getCapabilities()) {
+			track.applyConstraints({
+				//@ts-ignore
+				advanced: [{ zoom: 1.5 }]
+			});
+		}
 		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
 		const url = new URL(res.getText());
 		if (url) {
