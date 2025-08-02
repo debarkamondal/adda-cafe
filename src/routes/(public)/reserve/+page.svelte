@@ -35,9 +35,9 @@
 		}
 		if (videoDevices.length === 1) videoInputDevice = videoDevices[0];
 		else {
-			const cams = videoDevices.filter((device) => device.label.includes('1'));
+			const cams = videoDevices.filter((device) => device.label.includes('back'));
 			console.log(cams);
-			videoInputDevice = cams[0];
+			videoInputDevice = cams[1];
 		}
 		console.log(videoInputDevice);
 		videoElement.srcObject = await navigator.mediaDevices.getUserMedia({
