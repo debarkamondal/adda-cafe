@@ -12,7 +12,7 @@
 	import Card from '$lib/components/Card.svelte';
 
 	let videoElement = $state<HTMLVideoElement>();
-	let videoInputDevice = $state<MediaStream>();
+	let videoInputDevice = $state<MediaDeviceInfo>();
 
 	let token = $state<string | null>(page.url.searchParams.get('token'));
 	let streaming = $state(false);
@@ -27,18 +27,28 @@
 	const getDevices = async () => {
 		const codeReader = new BrowserQRCodeReader();
 		if (!videoElement) return;
-		videoInputDevice = await navigator.mediaDevices.getUserMedia({
-			video: true
-		});
 		const devices = await navigator.mediaDevices.enumerateDevices();
-		console.log('devices', devices);
-		videoElement.srcObject = videoInputDevice;
+		const videoDevices = devices.filter((device) => device.kind === 'videoinput');
+		if (!videoDevices) {
+			toastStore.error('No camera found.');
+			return;
+		}
+		if (videoDevices.length === 1) videoInputDevice = videoDevices[0];
+		else {
+			const cams = videoDevices.filter((device) => device.label.includes('0'));
+			console.log(cams);
+			videoInputDevice = cams[0];
+		}
+		console.log(videoInputDevice);
+		videoElement.srcObject = await navigator.mediaDevices.getUserMedia({
+			video: { deviceId: videoInputDevice.deviceId }
+		});
 		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
 		const url = new URL(res.getText());
 		if (url) {
 			token = url.searchParams.get('token') as string;
 			pushState('/reserve?token=' + token, page.state);
-			videoInputDevice.getTracks().forEach((track) => track.stop());
+			videoElement.srcObject.getTracks().forEach((track) => track.stop());
 		}
 	};
 	const handleCanPlay = () => {
