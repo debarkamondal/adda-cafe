@@ -36,10 +36,8 @@
 		if (videoDevices.length === 1) videoInputDevice = videoDevices[0];
 		else {
 			const cams = videoDevices.filter((device) => device.label.includes('back'));
-			console.log(cams);
 			videoInputDevice = cams[0];
 		}
-		console.log(videoInputDevice);
 		videoElement.srcObject = await navigator.mediaDevices.getUserMedia({
 			video: { deviceId: videoInputDevice.deviceId }
 		});
@@ -47,7 +45,7 @@
 		if ('zoom' in track.getCapabilities()) {
 			track.applyConstraints({
 				//@ts-ignore
-				advanced: [{ zoom: 1.5 }]
+				advanced: [{ zoom: 2 }]
 			});
 		}
 		const res = await codeReader.decodeOnceFromVideoElement(videoElement);
